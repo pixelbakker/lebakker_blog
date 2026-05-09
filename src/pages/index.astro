@@ -1,0 +1,79 @@
+---
+import { getCollection } from 'astro:content';
+import Base from '../layouts/Base.astro';
+
+const base = import.meta.env.BASE_URL;
+
+const allPosts = await getCollection('posts', ({ data }) => !data.draft);
+const posts = allPosts.sort((a, b) => b.data.date.valueOf() - a.data.date.valueOf());
+---
+<Base title="Leif Arne Bakker">
+  <ul class="post-list">
+    {posts.map((post) => {
+      const date = post.data.date.toLocaleDateString('nb-NO', {
+        day: 'numeric',
+        month: 'long',
+        year: 'numeric',
+      });
+      return (
+        <li class="post-item">
+          <a href={`${base}posts/${post.id.replace(/\.mdx?$/, '')}`} class="post-link">
+            <h2 class="post-title">{post.data.title}</h2>
+            <p class="post-description">{post.data.description}</p>
+            <time class="post-date" datetime={post.data.date.toISOString()}>{date}</time>
+          </a>
+        </li>
+      );
+    })}
+    {posts.length === 0 && (
+      <li class="empty">Ingen innlegg ennå.</li>
+    )}
+  </ul>
+</Base>
+
+<style>
+  .post-list {
+    list-style: none;
+    display: flex;
+    flex-direction: column;
+    gap: 0;
+  }
+
+  .post-item + .post-item {
+    border-top: 1px solid var(--color-border);
+  }
+
+  .post-link {
+    display: block;
+    padding: 1.75rem 0;
+    text-decoration: none;
+    color: inherit;
+  }
+
+  .post-link:hover .post-title {
+    color: var(--color-accent);
+  }
+
+  .post-title {
+    font-size: 1.2rem;
+    font-weight: 600;
+    margin-bottom: 0.35rem;
+    transition: color 0.1s;
+  }
+
+  .post-description {
+    color: var(--color-muted);
+    font-size: 0.95rem;
+    margin-bottom: 0.5rem;
+  }
+
+  .post-date {
+    color: var(--color-muted);
+    font-size: 0.85rem;
+  }
+
+  .empty {
+    color: var(--color-muted);
+    padding: 2rem 0;
+  }
+</style>

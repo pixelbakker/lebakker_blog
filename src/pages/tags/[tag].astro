@@ -1,0 +1,107 @@
+---
+import { getCollection } from 'astro:content';
+import Base from '../../layouts/Base.astro';
+
+export async function getStaticPaths() {
+  const allPosts = await getCollection('posts', ({ data }) => !data.draft);
+
+  const tags = [...new Set(allPosts.flatMap((post) => post.data.tags))];
+
+  return tags.map((tag) => ({
+    params: { tag },
+    props: {
+      posts: allPosts
+        .filter((post) => post.data.tags.includes(tag))
+        .sort((a, b) => b.data.date.valueOf() - a.data.date.valueOf()),
+    },
+  }));
+}
+
+const { tag } = Astro.params;
+const { posts } = Astro.props;
+const base = import.meta.env.BASE_URL;
+---
+<Base title={`${tag} – Leif Arne Bakker`} description={`Innlegg tagget med ${tag}.`}>
+  <div class="tag-header">
+    <a href={base} class="back">&larr; Alle innlegg</a>
+    <h1>#{tag}</h1>
+  </div>
+  <ul class="post-list">
+    {posts.map((post) => {
+      const date = post.data.date.toLocaleDateString('nb-NO', {
+        day: 'numeric',
+        month: 'long',
+        year: 'numeric',
+      });
+      return (
+        <li class="post-item">
+          <a href={`${base}posts/${post.id.replace(/\.mdx?$/, '')}`} class="post-link">
+            <h2 class="post-title">{post.data.title}</h2>
+            <p class="post-description">{post.data.description}</p>
+            <time class="post-date" datetime={post.data.date.toISOString()}>{date}</time>
+          </a>
+        </li>
+      );
+    })}
+  </ul>
+</Base>
+
+<style>
+  .tag-header {
+    margin-bottom: 2rem;
+  }
+
+  .back {
+    font-size: 0.9rem;
+    color: var(--color-muted);
+    text-decoration: none;
+    display: block;
+    margin-bottom: 0.75rem;
+  }
+
+  .back:hover {
+    color: var(--color-accent);
+  }
+
+  h1 {
+    font-size: 1.5rem;
+    font-weight: 600;
+    color: var(--color-accent);
+  }
+
+  .post-list {
+    list-style: none;
+  }
+
+  .post-item + .post-item {
+    border-top: 1px solid var(--color-border);
+  }
+
+  .post-link {
+    display: block;
+    padding: 1.75rem 0;
+    text-decoration: none;
+    color: inherit;
+  }
+
+  .post-link:hover .post-title {
+    color: var(--color-accent);
+  }
+
+  .post-title {
+    font-size: 1.2rem;
+    font-weight: 600;
+    margin-bottom: 0.35rem;
+  }
+
+  .post-description {
+    color: var(--color-muted);
+    font-size: 0.95rem;
+    margin-bottom: 0.5rem;
+  }
+
+  .post-date {
+    color: var(--color-muted);
+    font-size: 0.85rem;
+  }
+</style>
