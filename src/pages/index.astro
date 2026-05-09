@@ -2,7 +2,7 @@
 import { getCollection } from 'astro:content';
 import Base from '../layouts/Base.astro';
 
-const base = import.meta.env.BASE_URL;
+const base = import.meta.env.BASE_URL.replace(/\/$/, '');
 
 const allPosts = await getCollection('posts', ({ data }) => !data.draft);
 const posts = allPosts.sort((a, b) => b.data.date.valueOf() - a.data.date.valueOf());
@@ -17,11 +17,20 @@ const posts = allPosts.sort((a, b) => b.data.date.valueOf() - a.data.date.valueO
       });
       return (
         <li class="post-item">
-          <a href={`${base}posts/${post.id.replace(/\.mdx?$/, '')}`} class="post-link">
+          <a href={`${base}/posts/${post.id.replace(/\.mdx?$/, '')}`} class="post-link">
             <h2 class="post-title">{post.data.title}</h2>
             <p class="post-description">{post.data.description}</p>
-            <time class="post-date" datetime={post.data.date.toISOString()}>{date}</time>
           </a>
+          <div class="post-footer">
+            <time class="post-date" datetime={post.data.date.toISOString()}>{date}</time>
+            {post.data.tags.length > 0 && (
+              <ul class="tags">
+                {post.data.tags.map((tag) => (
+                  <li><a href={`${base}/tags/${tag}`} class="tag">{tag}</a></li>
+                ))}
+              </ul>
+            )}
+          </div>
         </li>
       );
     })}
@@ -45,7 +54,7 @@ const posts = allPosts.sort((a, b) => b.data.date.valueOf() - a.data.date.valueO
 
   .post-link {
     display: block;
-    padding: 1.75rem 0;
+    padding: 1.75rem 0 0.6rem;
     text-decoration: none;
     color: inherit;
   }
@@ -64,12 +73,40 @@ const posts = allPosts.sort((a, b) => b.data.date.valueOf() - a.data.date.valueO
   .post-description {
     color: var(--color-muted);
     font-size: 0.95rem;
-    margin-bottom: 0.5rem;
+  }
+
+  .post-footer {
+    display: flex;
+    align-items: center;
+    gap: 1rem;
+    flex-wrap: wrap;
+    padding-bottom: 1.75rem;
   }
 
   .post-date {
     color: var(--color-muted);
     font-size: 0.85rem;
+  }
+
+  .tags {
+    list-style: none;
+    display: flex;
+    gap: 0.4rem;
+    flex-wrap: wrap;
+  }
+
+  .tag {
+    color: var(--color-muted);
+    font-size: 0.8rem;
+    border: 1px solid var(--color-border);
+    padding: 0.1em 0.5em;
+    border-radius: 3px;
+    text-decoration: none;
+  }
+
+  .tag:hover {
+    color: var(--color-accent);
+    border-color: var(--color-accent);
   }
 
   .empty {

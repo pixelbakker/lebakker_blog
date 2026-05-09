@@ -19,7 +19,7 @@ export async function getStaticPaths() {
 
 const { tag } = Astro.params;
 const { posts } = Astro.props;
-const base = import.meta.env.BASE_URL;
+const base = import.meta.env.BASE_URL.replace(/\/$/, '');
 ---
 <Base title={`${tag} – Leif Arne Bakker`} description={`Innlegg tagget med ${tag}.`}>
   <div class="tag-header">
@@ -35,11 +35,20 @@ const base = import.meta.env.BASE_URL;
       });
       return (
         <li class="post-item">
-          <a href={`${base}posts/${post.id.replace(/\.mdx?$/, '')}`} class="post-link">
+          <a href={`${base}/posts/${post.id.replace(/\.mdx?$/, '')}`} class="post-link">
             <h2 class="post-title">{post.data.title}</h2>
             <p class="post-description">{post.data.description}</p>
-            <time class="post-date" datetime={post.data.date.toISOString()}>{date}</time>
           </a>
+          <div class="post-footer">
+            <time class="post-date" datetime={post.data.date.toISOString()}>{date}</time>
+            {post.data.tags.filter((t) => t !== tag).length > 0 && (
+              <ul class="tags">
+                {post.data.tags.filter((t) => t !== tag).map((t) => (
+                  <li><a href={`${base}/tags/${t}`} class="tag">{t}</a></li>
+                ))}
+              </ul>
+            )}
+          </div>
         </li>
       );
     })}
@@ -79,7 +88,7 @@ const base = import.meta.env.BASE_URL;
 
   .post-link {
     display: block;
-    padding: 1.75rem 0;
+    padding: 1.75rem 0 0.6rem;
     text-decoration: none;
     color: inherit;
   }
@@ -97,11 +106,39 @@ const base = import.meta.env.BASE_URL;
   .post-description {
     color: var(--color-muted);
     font-size: 0.95rem;
-    margin-bottom: 0.5rem;
+  }
+
+  .post-footer {
+    display: flex;
+    align-items: center;
+    gap: 1rem;
+    flex-wrap: wrap;
+    padding-bottom: 1.75rem;
   }
 
   .post-date {
     color: var(--color-muted);
     font-size: 0.85rem;
+  }
+
+  .tags {
+    list-style: none;
+    display: flex;
+    gap: 0.4rem;
+    flex-wrap: wrap;
+  }
+
+  .tag {
+    color: var(--color-muted);
+    font-size: 0.8rem;
+    border: 1px solid var(--color-border);
+    padding: 0.1em 0.5em;
+    border-radius: 3px;
+    text-decoration: none;
+  }
+
+  .tag:hover {
+    color: var(--color-accent);
+    border-color: var(--color-accent);
   }
 </style>
