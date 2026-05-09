@@ -19,6 +19,8 @@ const formattedDate = date.toLocaleDateString('nb-NO', {
 ---
 <Base title={title} description={description}>
   <article>
+    <a href={base} class="back-link">&larr; Alle innlegg</a>
+
     <header class="post-header">
       <h1>{title}</h1>
       <div class="post-meta">
@@ -34,13 +36,30 @@ const formattedDate = date.toLocaleDateString('nb-NO', {
         )}
       </div>
     </header>
+
     <div class="post-body">
       <slot />
     </div>
+
+    <footer class="post-footer">
+      <a href={base} class="back-link">&larr; Alle innlegg</a>
+    </footer>
   </article>
 </Base>
 
 <style>
+  .back-link {
+    display: inline-block;
+    color: var(--color-muted);
+    font-size: 0.9rem;
+    text-decoration: none;
+    margin-bottom: 1.75rem;
+  }
+
+  .back-link:hover {
+    color: var(--color-accent);
+  }
+
   .post-header {
     margin-bottom: 2.5rem;
     padding-bottom: 1.5rem;
@@ -48,10 +67,10 @@ const formattedDate = date.toLocaleDateString('nb-NO', {
   }
 
   h1 {
-    font-size: 1.75rem;
+    font-size: 1.85rem;
     font-weight: 600;
-    line-height: 1.3;
-    margin-bottom: 0.75rem;
+    line-height: 1.25;
+    margin-bottom: 0.85rem;
   }
 
   .post-meta {
@@ -83,43 +102,115 @@ const formattedDate = date.toLocaleDateString('nb-NO', {
     border-color: var(--color-accent);
   }
 
+  /* Prose typography */
+
+  .post-body {
+    font-size: 1.0625rem;
+    line-height: 1.85;
+  }
+
+  .post-body :global(p) {
+    margin-bottom: 1.4rem;
+  }
+
+  .post-body :global(p:first-child) {
+    font-size: 1.1rem;
+  }
+
+  .post-body :global(a) {
+    color: var(--color-accent);
+    text-decoration: underline;
+    text-underline-offset: 3px;
+    text-decoration-thickness: 1px;
+  }
+
+  .post-body :global(a:hover) {
+    text-decoration-thickness: 2px;
+  }
+
+  .post-body :global(strong) {
+    font-weight: 600;
+    color: var(--color-text);
+  }
+
+  .post-body :global(em) {
+    font-style: italic;
+  }
+
   .post-body :global(h2) {
     font-size: 1.35rem;
     font-weight: 600;
-    margin: 2rem 0 0.75rem;
+    line-height: 1.3;
+    margin: 2.25rem 0 0.75rem;
   }
 
   .post-body :global(h3) {
     font-size: 1.15rem;
     font-weight: 600;
-    margin: 1.75rem 0 0.5rem;
-  }
-
-  .post-body :global(p) {
-    margin-bottom: 1.25rem;
+    line-height: 1.35;
+    margin: 2rem 0 0.5rem;
   }
 
   .post-body :global(ul),
   .post-body :global(ol) {
     padding-left: 1.5rem;
-    margin-bottom: 1.25rem;
+    margin-bottom: 1.4rem;
   }
 
   .post-body :global(li) {
-    margin-bottom: 0.35rem;
+    margin-bottom: 0.4rem;
   }
 
   .post-body :global(blockquote) {
     border-left: 3px solid var(--color-accent);
-    padding-left: 1.25rem;
-    margin: 1.75rem 0;
+    padding: 0.1rem 0 0.1rem 1.25rem;
+    margin: 2rem 0;
     color: var(--color-muted);
     font-style: italic;
   }
 
+  .post-body :global(blockquote p) {
+    margin-bottom: 0;
+  }
+
   .post-body :global(hr) {
     border: none;
-    border-top: 1px solid var(--color-border);
+    text-align: center;
+    margin: 2.5rem 0;
+    color: var(--color-muted);
+    letter-spacing: 0.4em;
+  }
+
+  .post-body :global(hr::after) {
+    content: '· · ·';
+  }
+
+  .post-body :global(img) {
+    width: 100%;
+    height: auto;
+    display: block;
     margin: 2rem 0;
+    border-radius: 2px;
+  }
+
+  .post-body :global(figure) {
+    margin: 2rem 0;
+  }
+
+  .post-body :global(figure img) {
+    margin: 0 0 0.6rem;
+  }
+
+  .post-body :global(figcaption) {
+    font-size: 0.875rem;
+    color: var(--color-muted);
+    text-align: center;
+    font-style: italic;
+  }
+
+  .post-footer {
+    margin-top: 3.5rem;
+    padding-top: 1.5rem;
+    border-top: 1px solid var(--color-border);
   }
 </style>
